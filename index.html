@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terrae — download administrative boundaries of the world</title>
+<meta name="description" content="Download the administrative boundaries of the world from Terrae: countries, first-level and second-level divisions, as polygons or lines, at four levels of detail. Choose on the map, download as GeoPackage.">
+<meta name="theme-color" content="#12141a">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+<script src="config.js"></script>
+</head>
+<body>
+<aside class="side" aria-label="Download options">
+  <header class="side-head">
+    <img src="icon.svg" alt="" width="34" height="34">
+    <div>
+      <h1>Terrae</h1>
+      <p>Administrative boundaries of the world</p>
+    </div>
+  </header>
+
+  <div class="side-body">
+    <div class="field">
+      <p class="label" id="l-adm">Administrative level</p>
+      <div class="seg" role="group" aria-labelledby="l-adm" data-field="adm">
+        <button type="button" value="adm0">Countries</button>
+        <button type="button" value="adm1">First level</button>
+        <button type="button" value="adm2">Second level</button>
+      </div>
+      <p class="hint" id="h-adm"></p>
+    </div>
+    <div class="field" id="f-view">
+      <p class="label" id="l-view">Representation</p>
+      <div class="seg" role="group" aria-labelledby="l-view" data-field="view">
+        <button type="button" value="reference">Reference</button>
+        <button type="button" value="de_facto">De facto</button>
+        <button type="button" value="disputes">Disputed areas</button>
+      </div>
+      <p class="hint" id="h-view"></p>
+    </div>
+    <div class="field">
+      <p class="label" id="l-geometry">Geometry</p>
+      <div class="seg" role="group" aria-labelledby="l-geometry" data-field="geometry">
+        <button type="button" value="polygons">Polygons</button>
+        <button type="button" value="lines">Lines</button>
+      </div>
+      <p class="hint" id="h-geometry"></p>
+    </div>
+    <div class="field">
+      <p class="label" id="l-detail">Level of detail</p>
+      <div class="seg" role="group" aria-labelledby="l-detail" data-field="detail" id="detail-seg"></div>
+      <p class="hint" id="h-detail"></p>
+    </div>
+    <div class="field">
+      <p class="label" id="l-coverage">Coverage</p>
+      <div class="seg" role="group" aria-labelledby="l-coverage" data-field="coverage">
+        <button type="button" value="world">Whole world</button>
+        <button type="button" value="selection">Selection</button>
+      </div>
+      <p class="hint" id="h-coverage"></p>
+    </div>
+    <div class="field" id="f-picker" hidden>
+      <p class="label"><label for="search" id="l-picker">Countries and territories</label><span class="count" id="sel-count"></span></p>
+      <input id="search" type="search" autocomplete="off" placeholder="Search by name or code">
+      <ul class="list" id="list" role="listbox" aria-multiselectable="true" aria-labelledby="l-picker"></ul>
+      <div class="chips" id="chips" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div class="side-foot" aria-live="polite">
+    <div class="summary"><strong id="total"></strong><span id="size"></span></div>
+    <button type="button" class="primary" id="go">Download</button>
+    <button type="button" class="plain" id="each" hidden>Download the files one by one</button>
+    <div class="bar" id="bar"><div></div></div>
+    <p class="notice" id="notice" hidden></p>
+    <p class="format">GeoPackage · WGS 84 · release <span id="release"></span></p>
+    <nav class="links" aria-label="About Terrae" id="links"></nav>
+  </div>
+</aside>
+
+<main class="map-wrap">
+  <div id="map" role="region" aria-label="World map. Click to select what to download."></div>
+  <div class="ctl top-left">
+    <button type="button" class="tool" id="box" aria-pressed="false">Select by box</button>
+    <button type="button" class="tool" id="clear" hidden>Clear selection</button>
+  </div>
+  <div class="ctl top-right"><div class="seg small" role="group" aria-label="Projection" id="proj">
+    <button type="button" value="mercator" aria-pressed="true">Flat</button><button type="button" value="globe" aria-pressed="false">Globe</button>
+  </div></div>
+  <div class="legend" id="legend"></div>
+  <div class="tip" id="tip"></div>
+  <p class="loading" id="loading">Loading…</p>
+</main>
+
+<script src="vendor/maplibre-gl.js"></script>
+<script src="vendor/pmtiles.js"></script>
+<script src="vendor/fflate.min.js"></script>
+<script src="vendor/sql-wasm.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
