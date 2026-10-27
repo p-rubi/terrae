@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terrae — download administrative boundaries of the world</title>
-<meta name="description" content="Download the administrative boundaries of the world from Terrae: countries, first-level and second-level divisions, as polygons or lines, at four levels of detail. Choose on the map, download as GeoPackage.">
+<meta name="description" content="Download the administrative boundaries of the world from Terrae: countries, first-level and second-level divisions, as polygons or lines, at four levels of detail. Choose on the map, download as GeoPackage or GeoJSON.">
 <meta name="theme-color" content="#12141a">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="vendor/maplibre-gl.css">
 <link rel="stylesheet" href="style.css">
 <script src="config.js"></script>
@@ -16,7 +19,7 @@
   <header class="side-head">
     <img src="icon.svg" alt="" width="34" height="34">
     <div>
-      <h1>Terrae</h1>
+      <h1>Terrae Downloader</h1>
       <p>Administrative boundaries of the world</p>
     </div>
   </header>
@@ -25,41 +28,47 @@
     <div class="field">
       <p class="label" id="l-adm">Administrative level</p>
       <div class="seg" role="group" aria-labelledby="l-adm" data-field="adm">
-        <button type="button" value="adm0">Countries</button>
-        <button type="button" value="adm1">First level</button>
-        <button type="button" value="adm2">Second level</button>
+        <button type="button" value="adm0">ADM0<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="adm1">ADM1<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="adm2">ADM2<span class="i" aria-hidden="true">i</span></button>
       </div>
-      <p class="hint" id="h-adm"></p>
     </div>
     <div class="field" id="f-view">
       <p class="label" id="l-view">Representation</p>
       <div class="seg" role="group" aria-labelledby="l-view" data-field="view">
-        <button type="button" value="reference">Reference</button>
-        <button type="button" value="de_facto">De facto</button>
-        <button type="button" value="disputes">Disputed areas</button>
+        <button type="button" value="reference">Reference<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="de_facto">De facto<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="disputes">Disputed areas<span class="i" aria-hidden="true">i</span></button>
       </div>
-      <p class="hint" id="h-view"></p>
+    </div>
+    <div class="field" id="f-also">
+      <p class="label" id="l-also">Also include<span class="i" tabindex="0" role="button" aria-label="About: Also include" id="h-also">i</span></p>
+      <div class="seg multi" role="group" aria-labelledby="l-also" id="also"></div>
     </div>
     <div class="field">
       <p class="label" id="l-geometry">Geometry</p>
       <div class="seg" role="group" aria-labelledby="l-geometry" data-field="geometry">
-        <button type="button" value="polygons">Polygons</button>
-        <button type="button" value="lines">Lines</button>
+        <button type="button" value="polygons">Polygons<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="lines">Lines<span class="i" aria-hidden="true">i</span></button>
       </div>
-      <p class="hint" id="h-geometry"></p>
     </div>
     <div class="field">
       <p class="label" id="l-detail">Level of detail</p>
       <div class="seg" role="group" aria-labelledby="l-detail" data-field="detail" id="detail-seg"></div>
-      <p class="hint" id="h-detail"></p>
+    </div>
+    <div class="field" id="f-format">
+      <p class="label" id="l-format">Format</p>
+      <div class="seg" role="group" aria-labelledby="l-format" data-field="format">
+        <button type="button" value="gpkg">GeoPackage<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="geojson">GeoJSON<span class="i" aria-hidden="true">i</span></button>
+      </div>
     </div>
     <div class="field">
       <p class="label" id="l-coverage">Coverage</p>
       <div class="seg" role="group" aria-labelledby="l-coverage" data-field="coverage">
-        <button type="button" value="world">Whole world</button>
-        <button type="button" value="selection">Selection</button>
+        <button type="button" value="world">Whole world<span class="i" aria-hidden="true">i</span></button>
+        <button type="button" value="selection">Selection<span class="i" aria-hidden="true">i</span></button>
       </div>
-      <p class="hint" id="h-coverage"></p>
     </div>
     <div class="field" id="f-picker" hidden>
       <p class="label"><label for="search" id="l-picker">Countries and territories</label><span class="count" id="sel-count"></span></p>
@@ -75,8 +84,10 @@
     <button type="button" class="plain" id="each" hidden>Download the files one by one</button>
     <div class="bar" id="bar"><div></div></div>
     <p class="notice" id="notice" hidden></p>
-    <p class="format">GeoPackage · WGS 84 · release <span id="release"></span></p>
-    <nav class="links" aria-label="About Terrae" id="links"></nav>
+    <div class="foot-meta">
+      <p class="format"><span id="fmt-name">GeoPackage</span> · WGS 84 · release <span id="release"></span></p>
+      <a class="gh" id="gh" href="https://github.com/p-rubi/terrae" target="_blank" rel="noopener" aria-label="Terrae on GitHub" title="Terrae on GitHub"><svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    </div>
   </div>
 </aside>
 
@@ -93,6 +104,7 @@
   <div class="tip" id="tip"></div>
   <p class="loading" id="loading">Loading…</p>
 </main>
+<div class="tt" id="tt" role="tooltip"></div>
 
 <script src="vendor/maplibre-gl.js"></script>
 <script src="vendor/pmtiles.js"></script>
